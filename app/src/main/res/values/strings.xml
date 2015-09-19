@@ -13,5 +13,6 @@
     <string name="destination_text">Destination</string>
     <string name="navigate_button_text">Navigate</string>
     <string name="your_location_text">Your location</string>
+    <string name="directions_label">Directions: </string>
 
 </resources>

@@ -43,4 +43,19 @@
         android:layout_height="wrap_content"
         android:text="@string/navigate_button_text"/>
 
+    <TextView
+        android:id="@+id/directions_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:padding="5dp"
+        android:text="@string/directions_label"
+        android:visibility="gone"/>
+
+    <ListView
+        android:id="@+id/directions_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
 </LinearLayout>
