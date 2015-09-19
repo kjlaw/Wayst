@@ -1,5 +1,6 @@
 package com.champions.wayst;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,12 +33,14 @@ public class NavigationActivity extends AppCompatActivity {
     private static final String API_KEY = "AIzaSyA-gfC_TmedowzzVdH4l3QveSS4DDdi4YM";
     private static final String KEY_STATUS = "status";
     private static final String STATUS_OK = "OK";
+    public static final String LAT_LNG_KEY = "latlng";
 
+    private EditText mOriginEditText;
     private EditText mDestinationEditText;
     private TextView mDirectionsLabel;
     private ListView mDirectionsList;
 
-    private List<LatLng> mStepCoordinates = null;
+    private ArrayList<LatLng> mStepCoordinates = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +48,17 @@ public class NavigationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_navigation);
 
         Button navigateButton = (Button) findViewById(R.id.navigate_button);
+        mOriginEditText = (EditText) findViewById(R.id.origin);
         mDestinationEditText = (EditText) findViewById(R.id.destination);
         mDirectionsLabel = (TextView) findViewById(R.id.directions_label);
         mDirectionsList = (ListView) findViewById(R.id.directions_list);
+
+        mOriginEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), getCurrentLocation(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         navigateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,12 +78,18 @@ public class NavigationActivity extends AppCompatActivity {
                     instructions = instructions.replaceAll("[\r\n]+", "\n").trim();
                     stepList.add(instructions);
 
-                    mStepCoordinates.add(new LatLng(step.start_location.lat, step.start_location.lng));
+                    if (step.start_location != null) {
+                        mStepCoordinates.add(new LatLng(step.start_location.lat, step.start_location.lng));
+                    }
                 }
 
                 if (stepList.size() > 0) {
                     showDirections(stepList);
                 }
+
+                Intent intent = new Intent(v.getContext(), LocationService.class);
+                intent.putParcelableArrayListExtra(LAT_LNG_KEY, mStepCoordinates);
+                startService(intent);
             }
         });
 

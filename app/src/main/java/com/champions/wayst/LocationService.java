@@ -9,73 +9,89 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
+
 public class LocationService extends Service {
 
     private static final String TAG = LocationService.class.getSimpleName();
 
+    private static final int LOCATION_INTERVAL = 4000;
+    private static final float LOCATION_DISTANCE = 0;
+
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 10f;
+
+    private List<LatLng> mStepCoordinates = null;
 
     private class LocationListener implements android.location.LocationListener{
         Location mLastLocation;
+
         public LocationListener(String provider)
         {
             Log.d(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
+
         @Override
         public void onLocationChanged(Location location)
         {
             Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
         }
+
         @Override
         public void onProviderDisabled(String provider)
         {
             Log.d(TAG, "onProviderDisabled: " + provider);
         }
+
         @Override
         public void onProviderEnabled(String provider)
         {
             Log.d(TAG, "onProviderEnabled: " + provider);
         }
+
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras)
         {
             Log.d(TAG, "onStatusChanged: " + provider);
         }
     }
+
     LocationListener[] mLocationListeners = new LocationListener[] {
             new LocationListener(LocationManager.GPS_PROVIDER),
             new LocationListener(LocationManager.NETWORK_PROVIDER)
     };
+
     @Override
     public IBinder onBind(Intent arg0)
     {
         return null;
     }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         Log.d(TAG, "onStartCommand");
+
+        mStepCoordinates = intent.getParcelableArrayListExtra(NavigationActivity.LAT_LNG_KEY);
+        if (mStepCoordinates != null) {
+            // TODO do something with this data
+            for (int i = 0; i < mStepCoordinates.size(); i++) {
+                Log.d(TAG, "latitude: " + mStepCoordinates.get(i).latitude);
+            }
+        }
+
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
+
     @Override
     public void onCreate()
     {
         Log.d(TAG, "onCreate");
         initializeLocationManager();
-        try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[1]);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-        }
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
@@ -85,7 +101,17 @@ public class LocationService extends Service {
         } catch (IllegalArgumentException ex) {
             Log.d(TAG, "gps provider does not exist " + ex.getMessage());
         }
+        try {
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                    mLocationListeners[1]);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        }
     }
+
     @Override
     public void onDestroy()
     {
@@ -96,11 +122,12 @@ public class LocationService extends Service {
                 try {
                     mLocationManager.removeUpdates(mLocationListeners[i]);
                 } catch (Exception ex) {
-                    Log.i(TAG, "fail to remove location listners, ignore", ex);
+                    Log.i(TAG, "fail to remove location listeners, ignore", ex);
                 }
             }
         }
     }
+
     private void initializeLocationManager() {
         Log.d(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
