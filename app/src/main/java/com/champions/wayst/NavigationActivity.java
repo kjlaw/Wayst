@@ -59,6 +59,7 @@ public class NavigationActivity extends AppCompatActivity {
                 List<String> stepList = new ArrayList<String>();
                 for (DirectionsDataModel.Step step : steps) {
                     String instructions = Html.fromHtml(step.html_instructions).toString();
+                    instructions = instructions.replaceAll("[\r\n]+", "\n").trim();
                     stepList.add(instructions);
                 }
 
@@ -164,7 +165,6 @@ public class NavigationActivity extends AppCompatActivity {
                 .appendQueryParameter("mode", TRAVEL_MODE)
                 .build().toString();
     }
-
 
     private void showDirections(List<String> instructions) {
         mDirectionsLabel.setVisibility(View.VISIBLE);
