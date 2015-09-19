@@ -49,8 +49,7 @@ public class MainActivity extends AppCompatActivity {
         final Button continueButton = (Button) findViewById(R.id.continue_button);
 
         // Object Avoidance Mode will be on by default
-        // Object Avoidance Mode will be switched off if Navigation Mode is switched on
-        // Navigation Mode will be switched off if Object Avoidance Mode is switched on
+        // Object Avoidance Mode and Navigation Mode will toggle if one or the other is switched on/off
 
         objectAvoidanceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -60,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     navigationSwitch.setChecked(false);
                 } else {
                     Log.d(TAG, "object avoidance off");
+                    navigationSwitch.setChecked(true);
                 }
             }
         });
@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     continueButton.setVisibility(View.VISIBLE);
                 } else {
                     Log.d(TAG, "navigation off");
+                    objectAvoidanceSwitch.setChecked(true);
                     continueButton.setVisibility(View.GONE);
                 }
             }
