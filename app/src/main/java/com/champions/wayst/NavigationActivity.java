@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -36,6 +37,8 @@ public class NavigationActivity extends AppCompatActivity {
     private TextView mDirectionsLabel;
     private ListView mDirectionsList;
 
+    private List<LatLng> mStepCoordinates = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,8 @@ public class NavigationActivity extends AppCompatActivity {
         navigateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mStepCoordinates = new ArrayList<LatLng>();
+
                 DirectionsDataModel.Directions directions = getDirections();
                 DirectionsDataModel.Step[] steps = getSteps(directions);
                 if (steps == null) {
@@ -61,6 +66,8 @@ public class NavigationActivity extends AppCompatActivity {
                     String instructions = Html.fromHtml(step.html_instructions).toString();
                     instructions = instructions.replaceAll("[\r\n]+", "\n").trim();
                     stepList.add(instructions);
+
+                    mStepCoordinates.add(new LatLng(step.start_location.lat, step.start_location.lng));
                 }
 
                 if (stepList.size() > 0) {

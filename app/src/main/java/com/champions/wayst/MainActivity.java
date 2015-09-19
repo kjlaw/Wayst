@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "continue button clicked, going to navigation activity");
+                startService(new Intent(MainActivity.this, LocationService.class));
                 Intent intent = new Intent(v.getContext(), NavigationActivity.class);
                 startActivity(intent);
             }
