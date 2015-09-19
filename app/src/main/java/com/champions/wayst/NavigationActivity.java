@@ -1,5 +1,6 @@
 package com.champions.wayst;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,12 +42,21 @@ public class NavigationActivity extends AppCompatActivity {
     private TextView mDirectionsLabel;
     private ListView mDirectionsList;
 
+    private String mCurrentLocationCoords;
+
     private ArrayList<LatLng> mStepCoordinates = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+
+        Intent intent = getIntent();
+        double currentLat = intent.getDoubleExtra(MainActivity.CURRENT_LAT_KEY, -1000);
+        double currentLng = intent.getDoubleExtra(MainActivity.CURRENT_LNG_KEY, -1000);
+        if (currentLat != -1000 && currentLng != -1000) {
+            mCurrentLocationCoords = currentLat + "," + currentLng;
+        }
 
         Button navigateButton = (Button) findViewById(R.id.navigate_button);
         mOriginEditText = (EditText) findViewById(R.id.origin);
@@ -63,6 +74,12 @@ public class NavigationActivity extends AppCompatActivity {
         navigateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                View view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+
                 mStepCoordinates = new ArrayList<LatLng>();
 
                 DirectionsDataModel.Directions directions = getDirections();
@@ -125,8 +142,8 @@ public class NavigationActivity extends AppCompatActivity {
     }
 
     private String getCurrentLocation() {
-        // TODO figure out how to get current location
-        return "Engineering 5, 200 University Ave W, Waterloo, ON N2L 3E9, Canada";
+        Log.d(TAG, "current location: " + mCurrentLocationCoords);
+        return mCurrentLocationCoords;
     }
 
     private DirectionsDataModel.Directions getDirections() {
