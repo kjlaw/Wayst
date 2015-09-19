@@ -10,8 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -29,6 +31,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int connnectionResult = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if (connnectionResult != ConnectionResult.SUCCESS) {
+            Toast.makeText(this, "Please install/update Google Play Services!", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         buildGoogleApiClient();
         if (mGoogleApiClient != null) {

@@ -37,7 +37,6 @@ public class NavigationActivity extends AppCompatActivity {
     private static final String STATUS_OK = "OK";
     public static final String LAT_LNG_KEY = "latlng";
 
-    private EditText mOriginEditText;
     private EditText mDestinationEditText;
     private TextView mDirectionsLabel;
     private ListView mDirectionsList;
@@ -59,12 +58,12 @@ public class NavigationActivity extends AppCompatActivity {
         }
 
         Button navigateButton = (Button) findViewById(R.id.navigate_button);
-        mOriginEditText = (EditText) findViewById(R.id.origin);
+        EditText originEditText = (EditText) findViewById(R.id.origin);
         mDestinationEditText = (EditText) findViewById(R.id.destination);
         mDirectionsLabel = (TextView) findViewById(R.id.directions_label);
         mDirectionsList = (ListView) findViewById(R.id.directions_list);
 
-        mOriginEditText.setOnClickListener(new View.OnClickListener() {
+        originEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), getCurrentLocation(), Toast.LENGTH_SHORT).show();

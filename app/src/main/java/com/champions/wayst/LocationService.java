@@ -19,13 +19,19 @@ public class LocationService extends Service {
 
     private static final int LOCATION_INTERVAL = 4000;
     private static final float LOCATION_DISTANCE = 0;
+    private static final int LOCATION_RANGE = 5;
 
     private LocationManager mLocationManager = null;
+    private Location mLastLocation;
 
     private List<LatLng> mStepCoordinates = null;
 
+    private LocationListener[] mLocationListeners = new LocationListener[] {
+            new LocationListener(LocationManager.GPS_PROVIDER),
+            new LocationListener(LocationManager.NETWORK_PROVIDER)
+    };
+
     private class LocationListener implements android.location.LocationListener{
-        Location mLastLocation;
 
         public LocationListener(String provider)
         {
@@ -38,6 +44,9 @@ public class LocationService extends Service {
         {
             Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
+            if (mStepCoordinates != null) {
+                navigate();
+            }
         }
 
         @Override
@@ -59,11 +68,6 @@ public class LocationService extends Service {
         }
     }
 
-    LocationListener[] mLocationListeners = new LocationListener[] {
-            new LocationListener(LocationManager.GPS_PROVIDER),
-            new LocationListener(LocationManager.NETWORK_PROVIDER)
-    };
-
     @Override
     public IBinder onBind(Intent arg0)
     {
@@ -77,14 +81,39 @@ public class LocationService extends Service {
 
         mStepCoordinates = intent.getParcelableArrayListExtra(NavigationActivity.LAT_LNG_KEY);
         if (mStepCoordinates != null) {
-            // TODO do something with this data
-            for (int i = 0; i < mStepCoordinates.size(); i++) {
-                Log.d(TAG, "latitude: " + mStepCoordinates.get(i).latitude);
-            }
+            navigate();
         }
 
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
+    }
+
+    private void navigate() {
+        Log.d(TAG, "navigate()");
+
+        if (mStepCoordinates == null) {
+            Log.d(TAG, "mStepCoordinates is null");
+            return;
+        }
+
+        if (mStepCoordinates.size() > 0) {
+            Log.d(TAG, "calculate distance");
+            float [] dist = new float[1];
+
+            double lat1 = mStepCoordinates.get(0).latitude;
+            double lng1 = mStepCoordinates.get(0).longitude;
+
+            double lat2 = mLastLocation.getLatitude();
+            double lng2 = mLastLocation.getLongitude();
+
+            Location.distanceBetween(lat1, lng1, lat2, lng2, dist);
+            if (dist[0] < LOCATION_RANGE) {
+                Log.d(TAG, "distance is less than 5 meters");
+                mStepCoordinates.remove(0);
+                // TODO parse html & buzz
+            }
+        }
+
     }
 
     @Override
