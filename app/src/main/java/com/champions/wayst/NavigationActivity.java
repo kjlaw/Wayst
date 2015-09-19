@@ -35,7 +35,9 @@ public class NavigationActivity extends AppCompatActivity {
     private static final String API_KEY = "AIzaSyA-gfC_TmedowzzVdH4l3QveSS4DDdi4YM";
     private static final String KEY_STATUS = "status";
     private static final String STATUS_OK = "OK";
-    public static final String LAT_LNG_KEY = "latlng";
+    public static final String COORDS_KEY = "coords";
+    public static final String DESCS_KEY = "descs";
+    public static final String DEST_KEY = "dest";
 
     private EditText mDestinationEditText;
     private TextView mDirectionsLabel;
@@ -44,6 +46,8 @@ public class NavigationActivity extends AppCompatActivity {
     private String mCurrentLocationCoords;
 
     private ArrayList<LatLng> mStepCoordinates = null;
+    private ArrayList<String> mStepDescriptions = null;
+    private LatLng mDestination = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,7 @@ public class NavigationActivity extends AppCompatActivity {
                 }
 
                 mStepCoordinates = new ArrayList<LatLng>();
+                mStepDescriptions = new ArrayList<String>();
 
                 DirectionsDataModel.Directions directions = getDirections();
                 DirectionsDataModel.Step[] steps = getSteps(directions);
@@ -97,6 +102,7 @@ public class NavigationActivity extends AppCompatActivity {
                     if (step.start_location != null) {
                         mStepCoordinates.add(new LatLng(step.start_location.lat, step.start_location.lng));
                     }
+                    mStepDescriptions.add(step.html_instructions);
                 }
 
                 if (stepList.size() > 0) {
@@ -104,7 +110,9 @@ public class NavigationActivity extends AppCompatActivity {
                 }
 
                 Intent intent = new Intent(v.getContext(), LocationService.class);
-                intent.putParcelableArrayListExtra(LAT_LNG_KEY, mStepCoordinates);
+                intent.putParcelableArrayListExtra(COORDS_KEY, mStepCoordinates);
+                intent.putExtra(DESCS_KEY, mStepDescriptions);
+                intent.putExtra(DEST_KEY, mDestination);
                 startService(intent);
             }
         });
@@ -128,6 +136,9 @@ public class NavigationActivity extends AppCompatActivity {
         if (legs == null) {
             Log.d(TAG, "legs is null!");
             return null;
+        }
+        if (legs[0].end_location != null) {
+            mDestination = new LatLng(legs[0].end_location.lat, legs[0].end_location.lng);
         }
         DirectionsDataModel.Step[] steps = null;
         if (legs.length > 0) {

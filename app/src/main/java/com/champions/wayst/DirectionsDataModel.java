@@ -2,6 +2,19 @@ package com.champions.wayst;
 
 public class DirectionsDataModel {
 
+    public enum Direction {
+        UNKNOWN("unknown"),
+        LEFT("left"),
+        RIGHT("right"),
+        CONTINUE("continue");
+
+        public final String desc;
+
+        Direction(String desc) {
+            this.desc = desc;
+        }
+    }
+
     public DirectionsDataModel() {}
 
     public static class Directions {
@@ -16,6 +29,7 @@ public class DirectionsDataModel {
 
     public static class Leg {
         public Step[] steps;
+        public LocationLatLng end_location;
     }
 
     public static class Step {

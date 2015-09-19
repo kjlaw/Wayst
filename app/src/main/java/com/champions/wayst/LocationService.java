@@ -25,6 +25,8 @@ public class LocationService extends Service {
     private Location mLastLocation;
 
     private List<LatLng> mStepCoordinates = null;
+    private List<String> mStepDescription = null;
+    private LatLng mDestination = null;
 
     private LocationListener[] mLocationListeners = new LocationListener[] {
             new LocationListener(LocationManager.GPS_PROVIDER),
@@ -79,8 +81,10 @@ public class LocationService extends Service {
     {
         Log.d(TAG, "onStartCommand");
 
-        mStepCoordinates = intent.getParcelableArrayListExtra(NavigationActivity.LAT_LNG_KEY);
-        if (mStepCoordinates != null) {
+        mStepCoordinates = intent.getParcelableArrayListExtra(NavigationActivity.COORDS_KEY);
+        mStepDescription = intent.getStringArrayListExtra(NavigationActivity.DESCS_KEY);
+        mDestination = intent.getParcelableExtra(NavigationActivity.DEST_KEY);
+        if (mStepCoordinates != null && mStepDescription != null && mDestination != null) {
             navigate();
         }
 
@@ -96,24 +100,50 @@ public class LocationService extends Service {
             return;
         }
 
+        float [] dist = new float[1];
+        double lat1 = mLastLocation.getLatitude();
+        double lng1 = mLastLocation.getLongitude();
+
         if (mStepCoordinates.size() > 0) {
             Log.d(TAG, "calculate distance");
-            float [] dist = new float[1];
 
-            double lat1 = mStepCoordinates.get(0).latitude;
-            double lng1 = mStepCoordinates.get(0).longitude;
-
-            double lat2 = mLastLocation.getLatitude();
-            double lng2 = mLastLocation.getLongitude();
+            double lat2 = mStepCoordinates.get(0).latitude;
+            double lng2 = mStepCoordinates.get(0).longitude;
 
             Location.distanceBetween(lat1, lng1, lat2, lng2, dist);
             if (dist[0] < LOCATION_RANGE) {
                 Log.d(TAG, "distance is less than 5 meters");
                 mStepCoordinates.remove(0);
-                // TODO parse html & buzz
+                DirectionsDataModel.Direction direction = parseDescription(mStepDescription.remove(0));
+                Log.d(TAG, "direction: " + direction.desc);
+                // TODO buzz direction
             }
         }
 
+        double lat2 = mDestination.latitude;
+        double lng2 = mDestination.longitude;
+
+        Location.distanceBetween(lat1, lng1, lat2, lng2, dist);
+
+        if (dist[0] < LOCATION_RANGE) {
+            Log.d(TAG, "Arrived!");
+            // TODO buzz arrival
+
+            // Stop service, we have arrived
+            this.stopSelf();
+        }
+    }
+
+    private DirectionsDataModel.Direction parseDescription(String description) {
+        description = description.toLowerCase();
+        if (description.contains("left")) {
+            return DirectionsDataModel.Direction.LEFT;
+        } else if (description.contains("right")) {
+            return DirectionsDataModel.Direction.RIGHT;
+        } else if (description.contains("continue")) {
+            return DirectionsDataModel.Direction.CONTINUE;
+        }
+        return DirectionsDataModel.Direction.UNKNOWN;
     }
 
     @Override
