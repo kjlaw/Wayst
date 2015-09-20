@@ -1,6 +1,5 @@
 package com.champions.wayst;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -11,13 +10,10 @@ import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.cloud.ParticleDevice;
 import io.particle.android.sdk.utils.Async;
 
-
-/**
- * Created by Digvijay on 15-09-19.
- */
 public class SparkComm {
 
     private static final String TAG = SparkComm.class.getSimpleName();
+
     private static boolean initialized = false;
     private static ParticleDevice mDevice;
 
@@ -40,7 +36,7 @@ public class SparkComm {
 
     }
 
-    public static void init(Context context) {
+    public static void init() {
         final String email = "samvitmonga@gmail.com";
         final String password = "uwaterloo";
 
@@ -54,28 +50,22 @@ public class SparkComm {
                 try {
                     variable = mDevice.getVariable("testValue");
                 } catch (ParticleDevice.VariableDoesNotExistException e) {
-//                    Toaster.s(SparkComm.this, "Error reading variable");
                     Log.d(TAG, "Error reading variable");
                     variable = -1;
                 }
                 return variable;
-
             }
 
             @Override
             public void onSuccess(Integer value) {
                 Log.d(TAG, "Logged in");
                 setInitialized(true);
-//                Toaster.l(SparkComm.this, "Logged in");
-//                Intent intent = ValueActivity.buildIntent(LoginActivity.this, value, mDevice.getID());
-//                startActivity(intent);
             }
 
             @Override
             public void onFailure(ParticleCloudException e) {
                 setInitialized(false);
                 Log.d(TAG, e.getBestMessage());
-//                Toaster.l(SparkComm.this, e.getBestMessage());
                 e.printStackTrace();
                 Log.d("info", e.getBestMessage());
             }
@@ -94,10 +84,9 @@ public class SparkComm {
                 mDevice.callFunction(cmd.toString());
                 return true;
             } catch (ParticleDevice.FunctionDoesNotExistException e) {
-    //                    Toaster.s(SparkComm.this, "Error reading variable");
                 Log.d(TAG, "Error finding function");
             } catch (ParticleCloudException e) {
-                Log.d(TAG, "Not connected to Particle cloud");
+                Log.d(TAG, "Not connected to Particle cloud: " + e.getKind());
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();

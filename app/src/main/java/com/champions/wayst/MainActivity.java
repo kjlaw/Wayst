@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ParticleCloudSDK.init(this);
-        SparkComm.init(this);
+        SparkComm.init();
 
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int connnectionResult = googleApiAvailability.isGooglePlayServicesAvailable(this);
