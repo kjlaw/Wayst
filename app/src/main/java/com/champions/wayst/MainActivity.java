@@ -17,6 +17,8 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ParticleCloudSDK.init(this);
         SparkComm.init(this);
 
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
