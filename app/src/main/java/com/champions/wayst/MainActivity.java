@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        SparkComm.init(this);
+
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int connnectionResult = googleApiAvailability.isGooglePlayServicesAvailable(this);
         if (connnectionResult != ConnectionResult.SUCCESS) {
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     Log.d(TAG, "object avoidance on");
                     navigationSwitch.setChecked(false);
+                    SparkComm.callFunc(SparkComm.Cmd.NAVOFF);
                 } else {
                     Log.d(TAG, "object avoidance off");
                 }
@@ -71,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "navigation on");
                     objectAvoidanceSwitch.setChecked(false);
                     continueButton.setVisibility(View.VISIBLE);
+                    SparkComm.callFunc(SparkComm.Cmd.NAVON);
+
                 } else {
                     Log.d(TAG, "navigation off");
                     continueButton.setVisibility(View.GONE);

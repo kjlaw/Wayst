@@ -116,7 +116,13 @@ public class LocationService extends Service {
                 mStepCoordinates.remove(0);
                 DirectionsDataModel.Direction direction = parseDescription(mStepDescription.remove(0));
                 Log.d(TAG, "direction: " + direction.desc);
-                // TODO buzz direction
+                SparkComm.Cmd dir = null;
+                if (direction == DirectionsDataModel.Direction.LEFT) {
+                    dir = SparkComm.Cmd.TURNLEFT;
+                } else if (direction == DirectionsDataModel.Direction.RIGHT) {
+                    dir = SparkComm.Cmd.TURNRIGHT;
+                }
+                SparkComm.callFunc(dir);
             }
         }
 
@@ -127,8 +133,7 @@ public class LocationService extends Service {
 
         if (dist[0] < LOCATION_RANGE) {
             Log.d(TAG, "Arrived!");
-            // TODO buzz arrival
-
+            SparkComm.callFunc(SparkComm.Cmd.DESTREACHED);
             // Stop service, we have arrived
             this.stopSelf();
         }
