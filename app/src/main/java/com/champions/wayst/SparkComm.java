@@ -43,6 +43,7 @@ public class SparkComm {
         Async.executeAsync(ParticleCloudSDK.getCloud(), new Async.ApiWork<ParticleCloud, Integer>() {
             @Override
             public Integer callApi(ParticleCloud sparkCloud) throws ParticleCloudException, IOException {
+                Log.d(TAG, "callApi");
                 sparkCloud.logIn(email, password);
                 sparkCloud.getDevices();
                 mDevice = sparkCloud.getDevice("51ff6c065067545714240187");
@@ -67,7 +68,6 @@ public class SparkComm {
                 setInitialized(false);
                 Log.d(TAG, e.getBestMessage());
                 e.printStackTrace();
-                Log.d("info", e.getBestMessage());
             }
         });
     }
@@ -78,20 +78,28 @@ public class SparkComm {
 
     private static void setInitialized(boolean enable) { initialized = enable; }
 
-    public static boolean callFunc(Cmd cmd) {
-        if (initialized) {
-            try {
-                mDevice.callFunction(cmd.toString());
-                return true;
-            } catch (ParticleDevice.FunctionDoesNotExistException e) {
-                Log.d(TAG, "Error finding function");
-            } catch (ParticleCloudException e) {
-                Log.d(TAG, "Not connected to Particle cloud: " + e.getKind());
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+    public static void callFunc(final Cmd cmd) {
+        Async.executeAsync(mDevice, new Async.ApiWork<ParticleDevice, Integer>() {
+
+            public Integer callApi(ParticleDevice particleDevice) throws ParticleCloudException, IOException {
+                Log.d(TAG, "callFunc callApi");
+                try {
+                    return particleDevice.callFunction(cmd.toString());
+                } catch (ParticleDevice.FunctionDoesNotExistException e) {
+                    e.printStackTrace();
+                }
+                return -1;
             }
-        }
-        return false;
+
+            @Override
+            public void onSuccess(Integer returnValue) {
+                Log.d(TAG, "callFunc onSuccess");
+            }
+
+            @Override
+            public void onFailure(ParticleCloudException e) {
+                Log.d(TAG, "callFunc onFailure");
+            }
+        });
     }
 }
