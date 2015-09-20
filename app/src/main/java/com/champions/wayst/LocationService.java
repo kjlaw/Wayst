@@ -114,7 +114,7 @@ public class LocationService extends Service {
             if (dist[0] < LOCATION_RANGE) {
                 Log.d(TAG, "distance is less than 5 meters");
                 mStepCoordinates.remove(0);
-                DirectionsDataModel.Direction direction = parseDescription(mStepDescription.remove(0));
+                DirectionsDataModel.Direction direction = DirectionsDataModel.parseDescription(mStepDescription.remove(0));
                 Log.d(TAG, "direction: " + direction.desc);
                 SparkComm.Cmd dir = null;
                 if (direction == DirectionsDataModel.Direction.LEFT) {
@@ -137,18 +137,6 @@ public class LocationService extends Service {
             // Stop service, we have arrived
             this.stopSelf();
         }
-    }
-
-    private DirectionsDataModel.Direction parseDescription(String description) {
-        description = description.toLowerCase();
-        if (description.contains("left")) {
-            return DirectionsDataModel.Direction.LEFT;
-        } else if (description.contains("right")) {
-            return DirectionsDataModel.Direction.RIGHT;
-        } else if (description.contains("continue")) {
-            return DirectionsDataModel.Direction.CONTINUE;
-        }
-        return DirectionsDataModel.Direction.UNKNOWN;
     }
 
     @Override

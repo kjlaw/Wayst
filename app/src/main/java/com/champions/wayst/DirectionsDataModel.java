@@ -42,4 +42,16 @@ public class DirectionsDataModel {
         public double lat;
         public double lng;
     }
+
+    public static DirectionsDataModel.Direction parseDescription(String description) {
+        description = description.toLowerCase();
+        if (description.contains("left")) {
+            return DirectionsDataModel.Direction.LEFT;
+        } else if (description.contains("right")) {
+            return DirectionsDataModel.Direction.RIGHT;
+        } else if (description.contains("continue")) {
+            return DirectionsDataModel.Direction.CONTINUE;
+        }
+        return DirectionsDataModel.Direction.UNKNOWN;
+    }
 }

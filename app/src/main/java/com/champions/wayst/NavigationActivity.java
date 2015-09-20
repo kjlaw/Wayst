@@ -9,6 +9,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -117,6 +118,20 @@ public class NavigationActivity extends AppCompatActivity {
             }
         });
 
+        mDirectionsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                DirectionsDataModel.Direction direction = DirectionsDataModel.parseDescription(mStepDescriptions.get(position));
+                Log.d(TAG, "direction: " + direction.desc);
+                SparkComm.Cmd dir = null;
+                if (direction == DirectionsDataModel.Direction.LEFT) {
+                    dir = SparkComm.Cmd.TURNLEFT;
+                } else if (direction == DirectionsDataModel.Direction.RIGHT) {
+                    dir = SparkComm.Cmd.TURNRIGHT;
+                }
+                SparkComm.callFunc(dir);
+            }
+        });
     }
 
     private DirectionsDataModel.Step[] getSteps(DirectionsDataModel.Directions directions) {
