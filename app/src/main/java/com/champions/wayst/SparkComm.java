@@ -83,7 +83,7 @@ public class SparkComm {
 
             public Integer callApi(ParticleDevice particleDevice) throws ParticleCloudException, IOException {
                 Log.d(TAG, "callFunc callApi");
-                if (cmd == null) {
+                if (cmd == null || particleDevice == null) {
                     return -1;
                 }
                 try {
