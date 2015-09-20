@@ -81,11 +81,13 @@ public class LocationService extends Service {
     {
         Log.d(TAG, "onStartCommand");
 
-        mStepCoordinates = intent.getParcelableArrayListExtra(NavigationActivity.COORDS_KEY);
-        mStepDescription = intent.getStringArrayListExtra(NavigationActivity.DESCS_KEY);
-        mDestination = intent.getParcelableExtra(NavigationActivity.DEST_KEY);
-        if (mStepCoordinates != null && mStepDescription != null && mDestination != null) {
-            navigate();
+        if (intent != null) {
+            mStepCoordinates = intent.getParcelableArrayListExtra(NavigationActivity.COORDS_KEY);
+            mStepDescription = intent.getStringArrayListExtra(NavigationActivity.DESCS_KEY);
+            mDestination = intent.getParcelableExtra(NavigationActivity.DEST_KEY);
+            if (mStepCoordinates != null && mStepDescription != null && mDestination != null) {
+                navigate();
+            }
         }
 
         super.onStartCommand(intent, flags, startId);
