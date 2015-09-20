@@ -129,7 +129,9 @@ public class NavigationActivity extends AppCompatActivity {
                 } else if (direction == DirectionsDataModel.Direction.RIGHT) {
                     dir = SparkComm.Cmd.TURNRIGHT;
                 }
-                SparkComm.callFunc(dir);
+                if (dir != null) {
+                    SparkComm.callFunc(dir);
+                }
             }
         });
     }
