@@ -17,6 +17,8 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -31,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ParticleCloudSDK.init(this);
+        SparkComm.init();
 
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int connnectionResult = googleApiAvailability.isGooglePlayServicesAvailable(this);
@@ -57,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     Log.d(TAG, "object avoidance on");
                     navigationSwitch.setChecked(false);
+                    SparkComm.callFunc(SparkComm.Cmd.NAVOFF);
                 } else {
                     Log.d(TAG, "object avoidance off");
                     navigationSwitch.setChecked(true);
@@ -71,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "navigation on");
                     objectAvoidanceSwitch.setChecked(false);
                     continueButton.setVisibility(View.VISIBLE);
+                    SparkComm.callFunc(SparkComm.Cmd.NAVON);
+
                 } else {
                     Log.d(TAG, "navigation off");
                     objectAvoidanceSwitch.setChecked(true);
